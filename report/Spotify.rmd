@@ -2,9 +2,16 @@
 title: "Spotify"
 author: "Silvia Ferrer, Marc Fortó, Ignacio Lloret, Iñigo Pikabea, Max Ticó and Rong Xing"
 date: "2023-10-05"
-output: html_document
+output: 
+  html_document:
+    toc: true
 ---
+
+## Preprocessing
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+
+source("../scripts/prueba.r")
 ```
