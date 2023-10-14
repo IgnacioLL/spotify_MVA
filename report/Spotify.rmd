@@ -10,6 +10,16 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+setwd("C:/MDS/MVA/Project")
+```
+
+## Lectura
+
+
+```{r lectura, include=FALSE}
+df <- read_csv("../Spotify_Youtube.csv")
+
+
 ```
 
 
@@ -17,7 +27,5 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r preprocessing, include=FALSE}
-
-
-
+source("../scripts/preprocessing.r")
 ```
