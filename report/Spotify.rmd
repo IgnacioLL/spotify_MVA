@@ -7,11 +7,25 @@ output:
     toc: true
 ---
 
-## Preprocessing
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+setwd("C:/MDS/MVA/Project")
+```
+
+## Lectura
 
 
-source("../scripts/prueba.r")
+```{r lectura, include=FALSE}
+df <- read_csv("../Spotify_Youtube.csv")
+
+
+```
+
+
+## Preprocessing
+
+
+```{r preprocessing, include=FALSE}
+source("../scripts/preprocessing.r")
 ```
