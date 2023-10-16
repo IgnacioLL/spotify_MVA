@@ -19,10 +19,10 @@ g4 <- ggplot(data = df_wk) + geom_histogram(aes(x=Comments)) + theme_minimal()
 grid.arrange(g1, g2, g3, g4, ncol = 2)
 
 ### Create logarithmic of Views, Stream, Likes and comments 
-df_wk$log_views <- log(df_wk$Views+1)
-df_wk$log_stream <- log(df_wk$Stream+1)
-df_wk$log_likes <- log(df_wk$Likes+1)
-df_wk$log_comments <- log(df_wk$Comments+1)
+df_wk$scaled_views <- scale(df_wk$Views)
+df_wk$scaled_stream <- scale(df_wk$Stream)
+df_wk$scaled_likes <- scale(df_wk$Likes)
+df_wk$scaled_comments <- scale(df_wk$Comments)
 
 
 g1 <- ggplot(data = df_wk) + geom_histogram(aes(x=log_views)) + theme_minimal()
@@ -45,6 +45,7 @@ cond_tempo <- (df_wk$Tempo <15)
 df_wk <- df_wk[which((cond_Noise & cond_tempo)==FALSE),]
 df_wk <- df_wk[(df_wk$Channel != 'White Noise - Topic') | is.na(df_wk$Channel),]
 
+df_wk[df_wk$Tempo <15,] %>% View()
 ## We impute missings for the rest
 df_wk$Tempo <- ifelse(df_wk$Tempo <15, NA, df_wk$Tempo)
 
@@ -67,7 +68,6 @@ ggplot(df_wk, aes(x = Artist)) +
 ## All Artist are represented 10 times.
 df_wk$Artist %>% unique %>% length()
 ## As we cannot study 2.079 some grouping is needed. 
-
 
 
 
