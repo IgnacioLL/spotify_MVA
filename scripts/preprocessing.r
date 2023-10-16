@@ -1,4 +1,4 @@
-library(tidyverse); library(stringr);library(ggplot2);library(gridExtra)
+library(tidyverse); library(stringr);library(ggplot2);library(gridExtra); library(missForest)
 
 
 
@@ -19,10 +19,10 @@ g4 <- ggplot(data = df_wk) + geom_histogram(aes(x=Comments)) + theme_minimal()
 grid.arrange(g1, g2, g3, g4, ncol = 2)
 
 ### Create logarithmic of Views, Stream, Likes and comments 
-df_wk$scaled_views <- scale(df_wk$Views)
-df_wk$scaled_stream <- scale(df_wk$Stream)
-df_wk$scaled_likes <- scale(df_wk$Likes)
-df_wk$scaled_comments <- scale(df_wk$Comments)
+df_wk$scaled_views <- log(df_wk$Views+1)
+df_wk$scaled_stream <- log(df_wk$Stream+1)
+df_wk$scaled_likes <- log(df_wk$Likes+1)
+df_wk$scaled_comments <- log(df_wk$Comments+1)
 
 
 g1 <- ggplot(data = df_wk) + geom_histogram(aes(x=log_views)) + theme_minimal()
@@ -68,6 +68,11 @@ ggplot(df_wk, aes(x = Artist)) +
 ## All Artist are represented 10 times.
 df_wk$Artist %>% unique %>% length()
 ## As we cannot study 2.079 some grouping is needed. 
+
+
+
+
+
 
 
 

@@ -23,9 +23,7 @@ df <- readr::read_csv("../Spotify_Youtube.csv")
 ## EDA before preprocessing
 
 ```{r EDA b prpr}
-source("../scripts/EDA_before_preproc.r")
-
-
+source("../scripts/EDA_before_preprocessing.r")
 ```
 
 
@@ -35,3 +33,6 @@ source("../scripts/EDA_before_preproc.r")
 ```{r preprocessing, include=FALSE}
 source("../scripts/preprocessing.r")
 ```
+
+
+## EDA after preprocessing
