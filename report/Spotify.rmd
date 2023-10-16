@@ -10,16 +10,20 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-setwd("C:/MDS/MVA/Project")
+
+
 ```
 
 ## Lectura
 
 
 ```{r lectura, include=FALSE}
-df <- read_csv("../Spotify_Youtube.csv")
+df <- readr::read_csv("../Spotify_Youtube.csv")
+```
+## EDA before preprocessing
 
-
+```{r EDA b prpr}
+source("../scripts/EDA_before_preprocessing.r")
 ```
 
 
@@ -29,3 +33,6 @@ df <- read_csv("../Spotify_Youtube.csv")
 ```{r preprocessing, include=FALSE}
 source("../scripts/preprocessing.r")
 ```
+
+
+## EDA after preprocessing
