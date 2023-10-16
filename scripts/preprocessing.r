@@ -5,7 +5,6 @@ library(tidyverse); library(stringr);library(ggplot2);library(gridExtra)
 df_wk <- df %>% select(!c("Uri","Url_youtube","...1","Url_spotify", "Description")) ## this columns won't be used.
 df_wk %>% glimpse
 ((df_wk$Artist %>% is.na)==FALSE) %>% sum
-((df_wk1$Artist %>% is.na)==FALSE) %>% sum
 ## If VEVO is in the WORD then the channel will be VEVO
 df_wk$Channel %>% table %>% sort(decreasing = TRUE)
 x <- (df_wk$Channel %>% stringr::str_match(pattern = "VEVO") %>% is.na)==FALSE
@@ -44,7 +43,7 @@ cond_Noise <- (df_wk$Track %>% stringr::str_match("Noise") %>% is.na()==FALSE)
 cond_tempo <- (df_wk$Tempo <15)
 
 df_wk <- df_wk[which((cond_Noise & cond_tempo)==FALSE),]
-df_wk1 <- df_wk[(df_wk$Channel != 'White Noise - Topic') | is.na(df_wk$Channel),]
+df_wk <- df_wk[(df_wk$Channel != 'White Noise - Topic') | is.na(df_wk$Channel),]
 
 ## We impute missings for the rest
 df_wk$Tempo <- ifelse(df_wk$Tempo <15, NA, df_wk$Tempo)
@@ -68,6 +67,8 @@ ggplot(df_wk, aes(x = Artist)) +
 ## All Artist are represented 10 times.
 df_wk$Artist %>% unique %>% length()
 ## As we cannot study 2.079 some grouping is needed. 
+
+
 
 
 
