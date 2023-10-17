@@ -1,6 +1,7 @@
-library(tidyverse); library(stringr);library(ggplot2);library(gridExtra); library(missForest)
-
-
+library(tidyverse); library(stringr);library(ggplot2);library(gridExtra)
+getwd()
+setwd("/Users/maxtico/Documents/Master Data Science/MVA/PROJECT/")
+df<- read_csv("../PROJECT/Spotify_Youtube.csv")
 
 df_wk <- df %>% select(!c("Uri","Url_youtube","...1","Url_spotify", "Description")) ## this columns won't be used.
 df_wk %>% glimpse
@@ -10,6 +11,10 @@ df_wk$Channel %>% table %>% sort(decreasing = TRUE)
 x <- (df_wk$Channel %>% stringr::str_match(pattern = "VEVO") %>% is.na)==FALSE
 df_wk$Channel[x] <- "VEVO"
 
+# Set categorical variables as factors
+for(i in c(1,2,3,4,16,17)) df_wk[,i]<-factor(df_wk[,i])
+
+df_wk
 
 g1 <- ggplot(data = df_wk) + geom_histogram(aes(x=Views)) + theme_minimal()
 g2 <- ggplot(data = df_wk) + geom_histogram(aes(x=Stream)) + theme_minimal()
@@ -19,17 +24,18 @@ g4 <- ggplot(data = df_wk) + geom_histogram(aes(x=Comments)) + theme_minimal()
 grid.arrange(g1, g2, g3, g4, ncol = 2)
 
 ### Create logarithmic of Views, Stream, Likes and comments 
-df_wk$scaled_views <- log(df_wk$Views+1)
-df_wk$scaled_stream <- log(df_wk$Stream+1)
-df_wk$scaled_likes <- log(df_wk$Likes+1)
-df_wk$scaled_comments <- log(df_wk$Comments+1)
+df_wk$scaled_views <- log(df_wk$Views)
+df_wk$scaled_stream <- log(df_wk$Stream)
+df_wk$scaled_likes <- log(df_wk$Likes)
+df_wk$scaled_comments <- log(df_wk$Comments)
 
 
-g1 <- ggplot(data = df_wk) + geom_histogram(aes(x=log_views)) + theme_minimal()
-g2 <- ggplot(data = df_wk) + geom_histogram(aes(x=log_stream)) + theme_minimal()
-g3 <- ggplot(data = df_wk) + geom_histogram(aes(x=log_likes)) + theme_minimal()
-g4 <- ggplot(data = df_wk) + geom_histogram(aes(x=log_comments)) + theme_minimal()
+g1 <- ggplot(data = df_wk) + geom_histogram(aes(x=scaled_views)) + theme_minimal()
+g2 <- ggplot(data = df_wk) + geom_histogram(aes(x=scaled_stream)) + theme_minimal()
+g3 <- ggplot(data = df_wk) + geom_histogram(aes(x=scaled_likes)) + theme_minimal()
+g4 <- ggplot(data = df_wk) + geom_histogram(aes(x=scaled_comments)) + theme_minimal()
 
+grid.arrange(g1, g2, g3, g4, ncol = 2)
 
 ## Outliers
 # Univariate outliers
@@ -70,10 +76,27 @@ df_wk$Artist %>% unique %>% length()
 ## As we cannot study 2.079 some grouping is needed. 
 
 
+library(DMwR2)
+glimpse(df_wk)
 
+# We remove rows which are completely missing
+ddf <- df_wk[!is.na(df_wk$Duration_ms), ]
 
+summary(ddf)
 
+# Selecting only numerical variables
+unwanted <- c("Album","Track","Artist","Title","Channel","Album_type","official_video","Licensed")
 
+df_imp_knn = knnImputation(ddf %>% select(!unwanted), k=5) # Only for numerical features (knn "only" for num var)
 
+# Joining the two dfs
+df <- cbind(df_imp_knn,ddf %>% select(!(df_imp_knn %>% names)))
+
+summary(df)
+
+library(missForest)
+set.seed(17)
+
+mf_imp <- missForest(df[,c(1,2,3,4,16,17)], variablewise=T, verbose=T) 
 
 
