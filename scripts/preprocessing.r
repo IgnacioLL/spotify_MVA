@@ -1,6 +1,6 @@
-library(tidyverse); library(stringr);library(ggplot2);library(gridExtra)
-getwd()
-setwd("D:/1r/MVA/spotify_MVA")
+library(tidyverse); library(stringr);library(ggplot2);library(gridExtra):library(mice)
+setwd("C:/MDS/MVA/Project")
+
 df<- read_csv("Spotify_Youtube.csv")
 
 
@@ -53,7 +53,6 @@ cond_tempo <- (df_wk$Tempo <15)
 df_wk <- df_wk[which((cond_Noise & cond_tempo)==FALSE),]
 df_wk <- df_wk[(df_wk$Channel != 'White Noise - Topic') | is.na(df_wk$Channel),]
 
-df_wk[df_wk$Tempo <15,] %>% View()
 ## We impute missings for the rest
 df_wk$Tempo <- ifelse(df_wk$Tempo <15, NA, df_wk$Tempo)
 
@@ -80,7 +79,7 @@ df_wk$Artist %>% unique %>% length()
 ## Convert numeric those variables that have a clearly not-normal distribution
 df_wk$instrumental_band <-  cut(df_wk$Instrumentalness, breaks = c(-1,0.00001, 0.25,0.5, Inf), labels = c("Zero", "Low","Medium","High"))
 df_wk$speech_band <-  cut(df_wk$Speechiness, breaks = c(-1,0.00001, 0.25,0.5, Inf), labels = c("Zero", "Low","Medium","High"))
-df_wk$Key <- df_wk$Key %>% as.factor(cond_Noise)
+df_wk$Key <- df_wk$Key %>% as.factor()
 
 ## Normalization of youtube related columns
 ## 1. Convert both official_video and Licensed to factor and encode its NA's to "NO_VIDEO"
@@ -105,34 +104,23 @@ df_wk <- df_wk %>%
     ),
     Title = ifelse(is.na(Title), "NO_VIDEO", Title),
     Channel = ifelse(is.na(Channel), "NO_VIDEO", Channel),
-    ## Corresponding NA's in Views, Comments and Likes should also be encoded
-    Views = ifelse(Title == "NO_VIDEO" & is.na(Views), 0, Views),
-    Likes = ifelse(Title == "NO_VIDEO" & is.na(Likes), 0, Likes),
-    Comments = ifelse(Title == "NO_VIDEO" & is.na(Comments), 0, Comments),
   )
+df_wk %>% apply(2, is.na) %>% apply(2, sum)
 
 
-library(DMwR2)
-glimpse(df_wk)
+df_wk_impute <- df_wk %>% select(!c("Artist","Track","Album","Title","Channel"))
 
-# We remove rows which are completely missing
-ddf <- df_wk[!is.na(df_wk$Duration_ms), ]
+df_wk_impute <- mice(df_wk_impute, method="cart", m=1) ## We use CART method as it gives no problem for Computationally singular errors.
+df_wk_impute <- mice::complete(df_wk_impute)
+add_df_wk <- df_wk %>% select(c("Artist","Track","Album","Title","Channel"))
 
-summary(ddf)
+df_wk_i <- cbind(add_df_wk, df_wk_impute)
 
-# Selecting only numerical variables
-unwanted <- c("Album","Track","Artist","Title","Channel","Album_type","official_video","Licensed")
 
-df_imp_knn = knnImputation(ddf %>% select(!unwanted), k=5) # Only for numerical features (knn "only" for num var)
+df_wk_i$scaled_comments <- ifelse(is.na(df_wk_i$scaled_comments), 0, df_wk_i$scaled_comments) # We will impute log(0) values as 0.
+df_wk_i$scaled_likes <- ifelse(is.na(df_wk_i$scaled_likes), 0, df_wk_i$scaled_likes) # We will impute log(0) values as 0.
+df_wk_i$scaled_views <- ifelse(is.na(df_wk_i$scaled_views), 0, df_wk_i$scaled_views) # We will impute log(0) values as 0.
 
-# Joining the two dfs
-df <- cbind(df_imp_knn,ddf %>% select(!(df_imp_knn %>% names)))
-
-summary(df)
-
-library(missForest)
-set.seed(17)
-
-mf_imp <- missForest(df[,c(1,2,3,4,16,17)], variablewise=T, verbose=T) 
+saveRDS(df_wk_i, file = "preprocessing.Rdata")
 
 

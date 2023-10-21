@@ -23,7 +23,9 @@ df <- readr::read_csv("../Spotify_Youtube.csv")
 ## EDA before preprocessing
 
 ```{r EDA b prpr}
-source("../scripts/EDA_before_preprocessing.r")
+library(DataExplorer)
+
+create_report(df)
 ```
 
 
@@ -36,3 +38,10 @@ source("../scripts/preprocessing.r")
 
 
 ## EDA after preprocessing
+
+```{r EDA b prpr}
+preprocessing.Rdata
+df_wk_i <- readRDS("../preprocessing.Rdata")
+
+create_report(df_wk_i,   config = configure_report(add_plot_prcomp = FALSE))
+```
