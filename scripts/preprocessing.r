@@ -1,7 +1,7 @@
 library(tidyverse); library(stringr);library(ggplot2);library(gridExtra);library(mice)
 # setwd("C:/MDS/MVA/Project")
 
-# df<- read_csv("Spotify_Youtube.csv")
+df<- read_csv("Spotify_Youtube.csv")
 
 
 df_wk <- df %>% select(!c("Uri","Url_youtube","...1","Url_spotify", "Description")) ## this columns won't be used.
@@ -81,6 +81,12 @@ df_wk$instrumental_band <-  cut(df_wk$Instrumentalness, breaks = c(-1,0.00001, 0
 df_wk$speech_band <-  cut(df_wk$Speechiness, breaks = c(-1,0.00001, 0.25,0.5, Inf), labels = c("Zero", "Low","Medium","High"))
 df_wk$Key <- df_wk$Key %>% as.factor()
 
+df_wk$scaled_views <- ifelse(df_wk$scaled_views %>% is.infinite, 0, df_wk$scaled_views)
+df_wk$scaled_likes <- ifelse(df_wk$scaled_likes %>% is.infinite, 0, df_wk$scaled_likes)
+df_wk$scaled_comments <- ifelse(df_wk$scaled_comments %>% is.infinite, 0, df_wk$scaled_comments)
+df_wk$scaled_stream <- ifelse(df_wk$scaled_stream %>% is.infinite, 0, df_wk$scaled_stream)
+
+
 ## Normalization of youtube related columns
 ## 1. Convert both official_video and Licensed to factor and encode its NA's to "NO_VIDEO"
 ## 2. Similarly, NA's of Title and Channel columns also encoded to "NO_VIDEO"
@@ -122,5 +128,3 @@ df_wk_i$scaled_likes <- ifelse(is.na(df_wk_i$scaled_likes), 0, df_wk_i$scaled_li
 df_wk_i$scaled_views <- ifelse(is.na(df_wk_i$scaled_views), 0, df_wk_i$scaled_views) # We will impute log(0) values as 0.
 
 saveRDS(df_wk_i, file = "preprocessing.Rdata")
-
-
