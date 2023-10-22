@@ -45,3 +45,10 @@ df_wk_i <- readRDS("../preprocessing.Rdata")
 
 create_report(df_wk_i,   config = configure_report(add_plot_prcomp = FALSE))
 ```
+
+## PCA
+
+```{r PCA}
+source("../scripts/PCA.r")
+```
+

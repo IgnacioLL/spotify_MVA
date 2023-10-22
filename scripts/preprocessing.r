@@ -1,7 +1,7 @@
-library(tidyverse); library(stringr);library(ggplot2);library(gridExtra):library(mice)
-setwd("C:/MDS/MVA/Project")
+library(tidyverse); library(stringr);library(ggplot2);library(gridExtra);library(mice)
+# setwd("C:/MDS/MVA/Project")
 
-df<- read_csv("Spotify_Youtube.csv")
+# df<- read_csv("Spotify_Youtube.csv")
 
 
 df_wk <- df %>% select(!c("Uri","Url_youtube","...1","Url_spotify", "Description")) ## this columns won't be used.
