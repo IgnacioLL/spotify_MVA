@@ -1,7 +1,8 @@
 library(tidyverse); library(stringr);library(ggplot2);library(gridExtra)
 getwd()
-setwd("/Users/maxtico/Documents/Master Data Science/MVA/PROJECT/")
-df<- read_csv("../PROJECT/Spotify_Youtube.csv")
+setwd("D:/1r/MVA/spotify_MVA")
+df<- read_csv("Spotify_Youtube.csv")
+
 
 df_wk <- df %>% select(!c("Uri","Url_youtube","...1","Url_spotify", "Description")) ## this columns won't be used.
 df_wk %>% glimpse
@@ -12,7 +13,8 @@ x <- (df_wk$Channel %>% stringr::str_match(pattern = "VEVO") %>% is.na)==FALSE
 df_wk$Channel[x] <- "VEVO"
 
 # Set categorical variables as factors
-for(i in c(1,2,3,4,16,17)) df_wk[,i]<-factor(df_wk[,i])
+#for(i in c(1,2,3,4,16,17)) df_wk[[i]] <- factor(df_wk[[i]])
+
 
 df_wk
 
@@ -74,6 +76,40 @@ ggplot(df_wk, aes(x = Artist)) +
 ## All Artist are represented 10 times.
 df_wk$Artist %>% unique %>% length()
 ## As we cannot study 2.079 some grouping is needed. 
+
+## Convert numeric those variables that have a clearly not-normal distribution
+df_wk$instrumental_band <-  cut(df_wk$Instrumentalness, breaks = c(-1,0.00001, 0.25,0.5, Inf), labels = c("Zero", "Low","Medium","High"))
+df_wk$speech_band <-  cut(df_wk$Speechiness, breaks = c(-1,0.00001, 0.25,0.5, Inf), labels = c("Zero", "Low","Medium","High"))
+df_wk$Key <- df_wk$Key %>% as.factor(cond_Noise)
+
+## Normalization of youtube related columns
+## 1. Convert both official_video and Licensed to factor and encode its NA's to "NO_VIDEO"
+## 2. Similarly, NA's of Title and Channel columns also encoded to "NO_VIDEO"
+df_wk <- df_wk %>%
+  mutate(
+    official_video = factor(
+      case_when(
+        is.na(official_video) ~ "NO_VIDEO",
+        official_video == TRUE ~ "OFFICIAL",
+        official_video == FALSE ~ "NON_OFFICIAL"
+      ),
+      levels = c("OFFICIAL", "NON_OFFICIAL", "NO_VIDEO")
+    ),
+    Licensed = factor(
+      case_when(
+        is.na(Licensed) ~ "NO_VIDEO",
+        Licensed == TRUE ~ "LICENSED",
+        Licensed == FALSE ~ "UNLICENSED"
+      ),
+      levels = c("LICENSED", "UNLICENSED", "NO_VIDEO")
+    ),
+    Title = ifelse(is.na(Title), "NO_VIDEO", Title),
+    Channel = ifelse(is.na(Channel), "NO_VIDEO", Channel),
+    ## Corresponding NA's in Views, Comments and Likes should also be encoded
+    Views = ifelse(Title == "NO_VIDEO" & is.na(Views), 0, Views),
+    Likes = ifelse(Title == "NO_VIDEO" & is.na(Likes), 0, Likes),
+    Comments = ifelse(Title == "NO_VIDEO" & is.na(Comments), 0, Comments),
+  )
 
 
 library(DMwR2)
