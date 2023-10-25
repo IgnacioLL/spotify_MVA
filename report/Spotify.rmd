@@ -52,3 +52,9 @@ create_report(df_wk_i,   config = configure_report(add_plot_prcomp = FALSE))
 source("../scripts/PCA.r")
 ```
 
+## MCA
+
+```{r PCA}
+source("../scripts/MCA_project.r")
+```
+
