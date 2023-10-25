@@ -183,39 +183,3 @@ a[[1]]$quali
 plotellipses(res.mca,keepvar=c("speech_band","official_video","Key","instrumental_band"), cex=0.4)
 plotellipses(res.mca,keepvar=c("quali"))
 plotellipses(res.mca,keepvar=c("quali.sup"))
-
-
-####********ADDENDUM*****************#######
-
-names(tea)
-#More graphics tools
-
-newtea = tea[, c("Tea", "How", "how", "sugar", "where", "always")]
-res.mca1<-MCA(newtea, method="Burt", graph=FALSE)
-cats = apply(newtea, 2, function(x) nlevels(as.factor(x)))
-cats
-
-mca1_vars_df = data.frame(res.mca1$var$coord, Variable = rep(names(cats), cats))
-mca1_obs_df = data.frame(res.mca1$ind$coord)
-
-library(ggplot2)
-ggplot(data=mca1_vars_df, 
-       aes(x = Dim.1, y = Dim.2, label = rownames(mca1_vars_df))) +
-  geom_hline(yintercept = 0, colour = "gray70") +
-  geom_vline(xintercept = 0, colour = "gray70") +
-  geom_text(aes(colour=Variable)) +
-  ggtitle("MCA plot of variables using R package FactoMineR")
-
-
-ggplot(data = mca1_obs_df, aes(x = Dim.1, y = Dim.2)) +
-  geom_hline(yintercept = 0, colour = "gray70") +
-  geom_vline(xintercept = 0, colour = "gray70") +
-  geom_point(colour = "gray50", alpha = 0.7) +
-  geom_density2d(colour = "gray80") +
-  geom_text(data = mca1_vars_df, 
-            aes(x = Dim.1, y = Dim.2, 
-                label = rownames(mca1_vars_df), colour = Variable)) +
-  ggtitle("MCA plot of variables using R package FactoMineR") +
-  scale_colour_discrete(name = "Variable")
-
-
