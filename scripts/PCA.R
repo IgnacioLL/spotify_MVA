@@ -7,11 +7,11 @@ numeriques
 df_wk_num<-df_wk_i[,numeriques]
 sapply(df_wk_num,class)
 #remove none scaled variables + transformed to categorical variables
-df_wk_num <- df_wk_num[, !(names(df_wk_num) %in% c("Views", "Stream", "Likes", "Comments","Speechiness","Instrumentalness"))]
+df_wk_num <- df_wk_num[, !(names(df_wk_num) %in% c("Views", "Stream", "Likes", "Comments","Speechiness","Instrumentalness", "scaled_likes", "scaled_comments"))]
 sapply(df_wk_num,class)
 colnames(df_wk_num)[colnames(df_wk_num) == "scaled_views"] <- "Views"
-colnames(df_wk_num)[colnames(df_wk_num) == "scaled_comments"] <- "Comments"
-colnames(df_wk_num)[colnames(df_wk_num) == "scaled_likes"] <- "Likes"
+#colnames(df_wk_num)[colnames(df_wk_num) == "scaled_comments"] <- "Comments"
+#colnames(df_wk_num)[colnames(df_wk_num) == "scaled_likes"] <- "Likes"
 colnames(df_wk_num)[colnames(df_wk_num) == "scaled_stream"] <- "Streams"
 
 # PRINCIPAL COMPONENT ANALYSIS
@@ -59,6 +59,10 @@ loadings_dimension4 <- loadings[, 4]
 loadings_dimension5 <- loadings[, 5]
 loadings_dimension6 <- loadings[, 6]
 
+# Configurar la ventana para mostrar 6 gráficas (2 filas x 3 columnas)
+par(mfrow=c(2,3))
+
+# Crear las gráficas
 barplot(loadings_dimension1, names.arg = colnames(loadings_dimension1), col = "blue", ylab = "Loadings", main = "Loadings for Dimension 1", las = 2)
 barplot(loadings_dimension2, names.arg = colnames(loadings_dimension2), col = "blue", ylab = "Loadings", main = "Loadings for Dimension 2", las = 2)
 barplot(loadings_dimension3, names.arg = colnames(loadings_dimension3), col = "blue", ylab = "Loadings", main = "Loadings for Dimension 3", las = 2)
@@ -66,17 +70,33 @@ barplot(loadings_dimension4, names.arg = colnames(loadings_dimension4), col = "b
 barplot(loadings_dimension5, names.arg = colnames(loadings_dimension5), col = "blue", ylab = "Loadings", main = "Loadings for Dimension 5", las = 2)
 barplot(loadings_dimension6, names.arg = colnames(loadings_dimension6), col = "blue", ylab = "Loadings", main = "Loadings for Dimension 6", las = 2)
 
-# PLOT OF INDIVIDUALS
+# Resetear la configuración de la ventana a la default (1x1)
+par(mfrow=c(1,1))
 
-#select your axis
-#eje1<-2
+# PC1 - PC2
 eje1<-1
-#eje2<-3
 eje2<-2
 
 #Projection of variables
 
 Phi = cor(df_wk_num,Psi) #correlation between principal components and numerical
+
+# PLOT OF INDIVIDUALS
+
+# Plot individuals With variables (problems with a large amount of rows)
+# plot(Psi[,eje1],Psi[,eje2], cex=0.1)
+# #text(Psi[,eje1],Psi[,eje2],labels=iden, cex=0.5)
+# axis(side=1, pos= 0, labels = F, col="cyan")
+# axis(side=3, pos= 0, labels = F, col="cyan")
+# axis(side=2, pos= 0, labels = F, col="cyan")
+# axis(side=4, pos= 0, labels = F, col="cyan")
+# X<-Phi[,eje1]
+# Y<-Phi[,eje2]
+# arrows(ze, ze, X, Y, length = 0.07,col="blue")
+# text(X[1:8],Y[1:8],labels=etiq[1:8],col="red", cex=0.7, pos=2)
+# text(X[9:10],Y[9:10],labels=etiq[9:10],col="red", cex=0.7, pos=3)
+# text(X[11],Y[11],labels=etiq[11],col="red", cex=0.7, pos=1)
+# text(X[12],Y[12],labels=etiq[12],col="red", cex=0.7, pos=3)
 
 #select your axis
 
@@ -94,7 +114,28 @@ text(X[9:10],Y[9:10],labels=etiq[9:10],col="darkblue", cex=0.7, pos=3)
 text(X[11],Y[11],labels=etiq[11],col="darkblue", cex=0.7, pos=1)
 text(X[12],Y[12],labels=etiq[12],col="darkblue", cex=0.7, pos=3)
 
-#Qualitative
+# PC1 - PC3
+eje1<-1
+eje2<-3
+
+X<-Phi[,eje1]
+Y<-Phi[,eje2]
+
+plot(Psi[,eje1],Psi[,eje2],type="n",xlim=c(min(X,0),max(X,0)), ylim=c(-1,1), xlab = paste("PC", eje1), ylab = paste("PC", eje2), main = "Factorial Map - PC1 vs PC3")
+axis(side=1, pos= 0, labels = F)
+axis(side=3, pos= 0, labels = F)
+axis(side=2, pos= 0, labels = F)
+axis(side=4, pos= 0, labels = F)
+arrows(ze, ze, X, Y, length = 0.07,col="blue")
+text(X[1:8],Y[1:8],labels=etiq[1:8],col="darkblue", cex=0.7, pos=2)
+text(X[9:10],Y[9:10],labels=etiq[9:10],col="darkblue", cex=0.7, pos=3)
+text(X[11],Y[11],labels=etiq[11],col="darkblue", cex=0.7, pos=1)
+text(X[12],Y[12],labels=etiq[12],col="darkblue", cex=0.7, pos=3)
+
+#Qualitative (PC1-PC3)
+
+eje1<-1
+eje2<-2
 
 df_wk_i$Album_type <- as.factor(df_wk_i$Album_type)
 
@@ -180,5 +221,36 @@ for(k in dordi){
   col<-col+1
 }
 legend("bottomleft",names(df_wk_i)[dordi],pch=1,col=colors[1:length(dordi)], cex=0.8)
+
+
+# IÑIGO
+
+# PLOT OF INDIVIDUALS - PCA1 Y PCA3
+
+#select your axis
+#eje1<-2
+eje1<-1
+#eje2<-3
+eje2<-4
+
+#Projection of variables
+
+Phi = cor(df_wk_num,Psi) #correlation between principal components and numerical
+
+#select your axis
+
+X<-Phi[,eje1]
+Y<-Phi[,eje2]
+
+plot(Psi[,eje1],Psi[,eje2],type="n",xlim=c(min(X,0),max(X,0)), ylim=c(-1,1), xlab = paste("PC", eje1), ylab = paste("PC", eje2), main = "Factorial Map - PC1 vs PC2")
+axis(side=1, pos= 0, labels = F)
+axis(side=3, pos= 0, labels = F)
+axis(side=2, pos= 0, labels = F)
+axis(side=4, pos= 0, labels = F)
+arrows(ze, ze, X, Y, length = 0.07,col="blue")
+text(X[1:8],Y[1:8],labels=etiq[1:8],col="darkblue", cex=0.7, pos=2)
+text(X[9:10],Y[9:10],labels=etiq[9:10],col="darkblue", cex=0.7, pos=3)
+text(X[11],Y[11],labels=etiq[11],col="darkblue", cex=0.7, pos=1)
+text(X[12],Y[12],labels=etiq[12],col="darkblue", cex=0.7, pos=3)
 
 
