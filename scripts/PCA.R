@@ -6,7 +6,7 @@ numeriques
 
 df_wk_num<-df_wk_i[,numeriques]
 sapply(df_wk_num,class)
-#remove none scaled variables + transformed to categorical variables
+#remove none scaled variables + transformed to categorical variables + Likes and Comments very correlated to Views
 df_wk_num <- df_wk_num[, !(names(df_wk_num) %in% c("Views", "Stream", "Likes", "Comments","Speechiness","Instrumentalness", "scaled_likes", "scaled_comments"))]
 sapply(df_wk_num,class)
 colnames(df_wk_num)[colnames(df_wk_num) == "scaled_views"] <- "Views"
@@ -77,10 +77,6 @@ par(mfrow=c(1,1))
 eje1<-1
 eje2<-2
 
-#Projection of variables
-
-Phi = cor(df_wk_num,Psi) #correlation between principal components and numerical
-
 # PLOT OF INDIVIDUALS
 
 # Plot individuals With variables (problems with a large amount of rows)
@@ -98,6 +94,10 @@ Phi = cor(df_wk_num,Psi) #correlation between principal components and numerical
 # text(X[11],Y[11],labels=etiq[11],col="red", cex=0.7, pos=1)
 # text(X[12],Y[12],labels=etiq[12],col="red", cex=0.7, pos=3)
 
+#Projection of variables
+
+Phi = cor(df_wk_num,Psi) #correlation between principal components and numerical
+
 #select your axis
 
 X<-Phi[,eje1]
@@ -109,10 +109,7 @@ axis(side=3, pos= 0, labels = F)
 axis(side=2, pos= 0, labels = F)
 axis(side=4, pos= 0, labels = F)
 arrows(ze, ze, X, Y, length = 0.07,col="blue")
-text(X[1:8],Y[1:8],labels=etiq[1:8],col="darkblue", cex=0.7, pos=2)
-text(X[9:10],Y[9:10],labels=etiq[9:10],col="darkblue", cex=0.7, pos=3)
-text(X[11],Y[11],labels=etiq[11],col="darkblue", cex=0.7, pos=1)
-text(X[12],Y[12],labels=etiq[12],col="darkblue", cex=0.7, pos=3)
+text(X[1:10],Y[1:10],labels=etiq[1:10],col="darkblue", cex=0.7, pos=3)
 
 # PC1 - PC3
 eje1<-1
@@ -127,10 +124,7 @@ axis(side=3, pos= 0, labels = F)
 axis(side=2, pos= 0, labels = F)
 axis(side=4, pos= 0, labels = F)
 arrows(ze, ze, X, Y, length = 0.07,col="blue")
-text(X[1:8],Y[1:8],labels=etiq[1:8],col="darkblue", cex=0.7, pos=2)
-text(X[9:10],Y[9:10],labels=etiq[9:10],col="darkblue", cex=0.7, pos=3)
-text(X[11],Y[11],labels=etiq[11],col="darkblue", cex=0.7, pos=1)
-text(X[12],Y[12],labels=etiq[12],col="darkblue", cex=0.7, pos=3)
+text(X[1:10],Y[1:10],labels=etiq[1:10],col="darkblue", cex=0.7, pos=3)
 
 #Qualitative (PC1-PC3)
 
@@ -167,10 +161,7 @@ axis(side=4, pos= 0, labels = F)
 
 #adf_wk_i projections of numerical variables in background
 arrows(ze, ze, X, Y, length = 0.07,col="lightgray")
-text(X[1:8],Y[1:8],labels=etiq[1:8],col="gray", cex=0.7)
-text(X[9:10],Y[9:10],labels=etiq[9:10],col="gray", cex=0.7, pos=3)
-text(X[11],Y[11],labels=etiq[11],col="gray", cex=0.7, pos=1)
-text(X[12],Y[12],labels=etiq[12],col="gray", cex=0.7, pos=3)
+text(X[1:10],Y[1:10],labels=etiq[1:10],col="gray", cex=0.7, pos=3)
 
 #adf_wk_i centroids
 c<-1
@@ -196,10 +187,7 @@ axis(side=4, pos= 0, labels = F)
 
 #adf_wk_i projections of numerical variables in background
 arrows(ze, ze, X, Y, length = 0.07,col="lightgray")
-text(X[1:8],Y[1:8],labels=etiq[1:8],col="gray", cex=0.7)
-text(X[9:10],Y[9:10],labels=etiq[9:10],col="gray", cex=0.7, pos=3)
-text(X[11],Y[11],labels=etiq[11],col="gray", cex=0.7, pos=1)
-text(X[12],Y[12],labels=etiq[12],col="gray", cex=0.7, pos=3)
+text(X[1:10],Y[1:10],labels=etiq[1:10],col="gray", cex=0.7, pos=3)
 
 #add ordinal variables
 dordi<-c(28,29)
@@ -221,36 +209,3 @@ for(k in dordi){
   col<-col+1
 }
 legend("bottomleft",names(df_wk_i)[dordi],pch=1,col=colors[1:length(dordi)], cex=0.8)
-
-
-# IÑIGO
-
-# PLOT OF INDIVIDUALS - PCA1 Y PCA3
-
-#select your axis
-#eje1<-2
-eje1<-1
-#eje2<-3
-eje2<-4
-
-#Projection of variables
-
-Phi = cor(df_wk_num,Psi) #correlation between principal components and numerical
-
-#select your axis
-
-X<-Phi[,eje1]
-Y<-Phi[,eje2]
-
-plot(Psi[,eje1],Psi[,eje2],type="n",xlim=c(min(X,0),max(X,0)), ylim=c(-1,1), xlab = paste("PC", eje1), ylab = paste("PC", eje2), main = "Factorial Map - PC1 vs PC2")
-axis(side=1, pos= 0, labels = F)
-axis(side=3, pos= 0, labels = F)
-axis(side=2, pos= 0, labels = F)
-axis(side=4, pos= 0, labels = F)
-arrows(ze, ze, X, Y, length = 0.07,col="blue")
-text(X[1:8],Y[1:8],labels=etiq[1:8],col="darkblue", cex=0.7, pos=2)
-text(X[9:10],Y[9:10],labels=etiq[9:10],col="darkblue", cex=0.7, pos=3)
-text(X[11],Y[11],labels=etiq[11],col="darkblue", cex=0.7, pos=1)
-text(X[12],Y[12],labels=etiq[12],col="darkblue", cex=0.7, pos=3)
-
-

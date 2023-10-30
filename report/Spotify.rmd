@@ -54,7 +54,7 @@ source("../scripts/PCA.r")
 
 ## MCA
 
-```{r PCA}
-source("../scripts/MCA_project.r")
+```{r MCA}
+source("../scripts/MCA.r")
 ```
 

@@ -4,7 +4,7 @@
 ##############################################
 
 
-#setwd("C:\\Users\\MVA\\Desktop\\UPC") #Set your Working
+#Set your Working
 # Directory
 ### Required packages ###
 library(FactoMineR)
@@ -15,7 +15,7 @@ library(corrplot)
 ?MCA
 
 ### Lectura de la base de dades ###
-spoty <- readRDS("preprocessing.RData")
+spoty <- readRDS("../preprocessing.RData")
 dim(spoty)
 summary(spoty)
 names(spoty)
@@ -90,8 +90,8 @@ fviz_mca_var(res.mca0, choice = "mca.cor",
 
 ### GRAPHICAL ANALYSIS - BIPLOTS
 ### BIPLOT
-fviz_mca_biplot(res.mca0,repel = TRUE, # Avoid text overlapping (slow if many point)
-                ggtheme = theme_minimal())
+#fviz_mca_biplot(res.mca0,repel = TRUE, # Avoid text overlapping (slow if many point)
+#                ggtheme = theme_minimal())
 #The plot above shows a global pattern within the data. Rows (individuals) are represented
 # by blue points and columns (variable categories) by red triangles
 # The distance between any row points or column points gives a measure of their similarity
@@ -112,7 +112,10 @@ fviz_mca_var(res.mca0,
 # the origin are well represented on the factor map.
 
 #Contribution of variable categories to the dimensions
-head(round(var$contrib,2), 4)
+# Showing the first four variables contributions
+head(round(res.mca0$var$contrib,2), 4)
+# Showing all variable contributions
+round(res.mca0$var$contrib,2)
 # Total contribution to dimension 1 and 2
 nrow(res.mca0$var$v.test) # Number of modalities
 fviz_contrib(res.mca0, choice = "var", axes = 1:2, top = 15)
@@ -211,8 +214,8 @@ fviz_mca_var(res.mca0, choice = "mca.cor",
 
 ### GRAPHICAL ANALYSIS - BIPLOTS
 ### BIPLOT
-fviz_mca_biplot(res.mca0,repel = TRUE, # Avoid text overlapping (slow if many point)
-                ggtheme = theme_minimal())
+#fviz_mca_biplot(res.mca0,repel = TRUE, # Avoid text overlapping (slow if many point)
+ #               ggtheme = theme_minimal())
 #The plot above shows a global pattern within the data. Rows (individuals) are represented
 # by blue points and columns (variable categories) by red triangles
 # The distance between any row points or column points gives a measure of their similarity
@@ -233,7 +236,9 @@ fviz_mca_var(res.mca0,
 # the origin are well represented on the factor map.
 
 #Contribution of variable categories to the dimensions
-head(round(var$contrib,2), 4)
+head(round(res.mca0$var$contrib,2), 4)
+# Showing all variable contributions
+round(res.mca0$var$contrib,2)
 # Total contribution to dimension 1 and 2
 nrow(res.mca0$var$v.test) # Number of modalities
 fviz_contrib(res.mca0, choice = "var", axes = 1:2, top = 15)
@@ -282,7 +287,7 @@ plot(res.mca,invisible="quali.sup", cex=0.5) #You can change cex parameter to im
 plot(res.mca,invisible="ind", cex=0.75)
 
 #Illustratives(Suplementary) Modalities only
-plot(res.mca,invisible=c("ind","var"), cex=0.70)
+#plot(res.mca,invisible=c("ind","var"), cex=0.70)
 
 
 #vaps
@@ -339,4 +344,4 @@ a[[1]]$quali
 #Confidence Regions "Ellipses"
 plotellipses(res.mca,keepvar=c("speech_band","official_video","Key","instrumental_band"), cex=0.4)
 plotellipses(res.mca,keepvar=c("quali"))
-plotellipses(res.mca,keepvar=c("quali.sup"))
+#plotellipses(res.mca,keepvar=c("quali.sup"))
