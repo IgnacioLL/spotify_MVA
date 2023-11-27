@@ -72,4 +72,21 @@ source("../scripts/PCA.r")
 source("../scripts/MCA_project.r")
 ```
 
->>>>>>> Stashed changes
+## Hierarchical Clustering
+```{r}
+df_wk_i <- readRDS("preprocessing.Rdata")
+df_ <- df_wk_i %>% 
+  select("Album_type","Danceability","Energy","Key","Loudness",
+         "Speechiness","Acousticness","Instrumentalness", "Liveness", "Valence",
+         "Tempo","Duration_ms","scaled_stream", "scaled_views", "genre","mode","time_signature",
+         "type"
+         )
+df_wk_i %>% names()
+d <- dist(df_)
+d
+h1 <- hclust(d,method="ward")  # NOTICE THE COST
+plot(h1)
+
+```
+
+
