@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 ---
 title: "Spotify"
 author: "Silvia Ferrer, Marc Fortó, Ignacio Lloret, Iñigo Pikabea, Max Ticó and Rong Xing"
@@ -58,3 +59,79 @@ source("../scripts/PCA.r")
 source("../scripts/MCA.r")
 ```
 
+=======
+---
+title: "Spotify"
+author: "Silvia Ferrer, Marc Fortó, Ignacio Lloret, Iñigo Pikabea, Max Ticó and Rong Xing"
+date: "2023-10-05"
+output: 
+  html_document:
+    toc: true
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(magrittr)
+library(tidyverse)
+library(arrow)
+
+```
+
+## Lectura
+
+
+```{r lectura, include=FALSE}
+df <- readr::read_csv("../Spotify_Youtube.csv")
+
+df2 <- readr::read_csv("../genres_v2.csv")
+
+df2$Uri <- df2$uri
+df2
+df2 <- df2 %>% select("Uri","genre","mode","time_signature","type")
+
+
+df3 <- merge(df, df2, by = c("Uri"))
+
+
+df3
+```
+## EDA before preprocessing
+
+```{r EDA b prpr}
+library(DataExplorer)
+
+create_report(df)
+```
+
+
+## Preprocessing
+
+
+```{r preprocessing, include=FALSE}
+source("../scripts/preprocessing.r")
+```
+
+
+## EDA after preprocessing
+
+```{r EDA b prpr}
+df_wk_i <- readRDS("../preprocessing.Rdata")
+
+create_report(df_wk_i,   config = configure_report(add_plot_prcomp = FALSE))
+```
+
+## PCA
+
+```{r PCA}
+source("../scripts/PCA.r")
+```
+
+## MCA
+
+```{r PCA}
+source("../scripts/MCA_project.r")
+```
+
+>>>>>>> Stashed changes

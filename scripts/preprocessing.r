@@ -1,7 +1,4 @@
 library(tidyverse); library(stringr);library(ggplot2);library(gridExtra);library(mice)
-# setwd("C:/MDS/MVA/Project")
-
-df<- read_csv("Spotify_Youtube.csv")
 
 
 df_wk <- df %>% select(!c("Uri","Url_youtube","...1","Url_spotify", "Description")) ## this columns won't be used.
@@ -12,11 +9,6 @@ df_wk$Channel %>% table %>% sort(decreasing = TRUE)
 x <- (df_wk$Channel %>% stringr::str_match(pattern = "VEVO") %>% is.na)==FALSE
 df_wk$Channel[x] <- "VEVO"
 
-# Set categorical variables as factors
-#for(i in c(1,2,3,4,16,17)) df_wk[[i]] <- factor(df_wk[[i]])
-
-
-df_wk
 
 g1 <- ggplot(data = df_wk) + geom_histogram(aes(x=Views)) + theme_minimal()
 g2 <- ggplot(data = df_wk) + geom_histogram(aes(x=Stream)) + theme_minimal()
