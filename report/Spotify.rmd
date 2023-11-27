@@ -1,65 +1,3 @@
-<<<<<<< Updated upstream
----
-title: "Spotify"
-author: "Silvia Ferrer, Marc Fortó, Ignacio Lloret, Iñigo Pikabea, Max Ticó and Rong Xing"
-date: "2023-10-05"
-output: 
-  html_document:
-    toc: true
----
-
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
-
-```
-
-## Lectura
-
-
-```{r lectura, include=FALSE}
-df <- readr::read_csv("../Spotify_Youtube.csv")
-```
-## EDA before preprocessing
-
-```{r EDA b prpr}
-library(DataExplorer)
-
-create_report(df)
-```
-
-
-## Preprocessing
-
-
-```{r preprocessing, include=FALSE}
-source("../scripts/preprocessing.r")
-```
-
-
-## EDA after preprocessing
-
-```{r EDA b prpr}
-preprocessing.Rdata
-df_wk_i <- readRDS("../preprocessing.Rdata")
-
-create_report(df_wk_i,   config = configure_report(add_plot_prcomp = FALSE))
-```
-
-## PCA
-
-```{r PCA}
-source("../scripts/PCA.r")
-```
-
-## MCA
-
-```{r MCA}
-source("../scripts/MCA.r")
-```
-
-=======
 ---
 title: "Spotify"
 author: "Silvia Ferrer, Marc Fortó, Ignacio Lloret, Iñigo Pikabea, Max Ticó and Rong Xing"
@@ -95,7 +33,7 @@ df2 <- df2 %>% select("Uri","genre","mode","time_signature","type")
 df3 <- merge(df, df2, by = c("Uri"))
 
 
-df3
+df <- df3
 ```
 ## EDA before preprocessing
 
@@ -117,7 +55,7 @@ source("../scripts/preprocessing.r")
 ## EDA after preprocessing
 
 ```{r EDA b prpr}
-df_wk_i <- readRDS("../preprocessing.Rdata")
+df_wk_i <- readRDS("preprocessing.Rdata")
 
 create_report(df_wk_i,   config = configure_report(add_plot_prcomp = FALSE))
 ```
