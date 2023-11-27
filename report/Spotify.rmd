@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(magrittr)
 library(tidyverse)
 library(arrow)
-
+library(FactoMineR)
 ```
 
 ## Lectura
@@ -83,9 +83,19 @@ df_ <- df_wk_i %>%
          )
 df_wk_i %>% names()
 d <- dist(df_)
-d
 h1 <- hclust(d,method="ward")  # NOTICE THE COST
 plot(h1)
+
+
+c1 <- cutree(h1,10)
+
+df_$cluster <- c1 %>% as.factor
+
+catdes(df_, num.var=which(names(df_)=='cluster'))
+
+df_ %>%
+  ggplot() +
+  geom_bar(aes(x = cluster, fill = genre), stat = "count")
 
 ```
 
