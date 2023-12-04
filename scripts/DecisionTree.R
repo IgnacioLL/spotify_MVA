@@ -2,40 +2,45 @@
 
 library(rpart)
 library(rpart.plot)
-df_wk_i <- readRDS("preprocessing.Rdata") #el que tiene el merge
 
+df_wk_i <- readRDS("report/preprocessing.Rdata") #el que tiene el merge
 
 dim(df_wk_i)
-
 names(df_wk_i)
+
 missingGenre<-which(is.na(df_wk_i[,24]));length(missingGenre) #0
 
 #df_wk_i<-df_wk_i[-missingGenre,]
 
-attach(df_wk_i)
-sapply(df_wk_i, class)
-summary(df_wk_i)
-
-#ASSUMING PREPROCESSED DATA
-# WHICH RESPONSE? -> GENRE
-# WHICH ARE CATEGORICAL AND WHICH ARE CONTINUOUS
-#check in "environment" window the correct type of all variables in df_
-
-
-#declare type of response variable and all factors
-# DECISION TREES   CART
 df_ <- df_wk_i %>% 
   select("Album_type","Danceability","Energy","Key","Loudness",
          "Speechiness","Acousticness","Instrumentalness", "Liveness", "Valence",
          "Tempo","Duration_ms","scaled_stream", "scaled_views", "genre","mode","time_signature",
          "type")
 
+# Our response variable is genre but our dataset it's unbalanced, so we decided to discriminate by a threshold of 100 observations.
+# In this way we can take only the modalities that are more relevant
+genre_counts <- table(df_$genre)
+selected_genres <- names(genre_counts[genre_counts > 100])
+
+df_f <- df_[df_$genre %in% selected_genres, ]
+
+attach(df_f)
+sapply(df_f, class)
+summary(df_f)
+
+#ASSUMING PREPROCESSED DATA
+# WHICH RESPONSE? -> GENRE
+# WHICH ARE CATEGORICAL AND WHICH ARE CONTINUOUS
+#check in "environment" window the correct type of all variables in df_
+
+#declare type of response variable and all factors
+# DECISION TREES   CART
 #by default
 dtot <- data.frame(Album_type,Danceability,Energy,Key,Loudness,Speechiness,Acousticness,Instrumentalness, Liveness, Valence,
                    Tempo,Duration_ms,scaled_stream,scaled_views,genre,mode,time_signature,type)
 
 #don't predict genre=NA, missing data on the response variable makes no sense
-
 
 
 # HOLDOUT OF A 1/3 OF DATA TO ESTIMATE THE MISCLASSIFICATION PROB. OF THE CHOSEN TREE 
@@ -123,7 +128,7 @@ dim(dtot)
 nlearn
 dim(dtot[learn,])
 
-table(Dictamen,exclude=FALSE)
+table(genre,exclude=FALSE)
 table(df_wk_i[learn,1])
 
 
@@ -141,7 +146,7 @@ predClass[predictions[,1]>=l]="pred_pos.learn"
 predictions[1:5]
 predClass[1:5]
 
-confusionMatrix <- table(Dictamen[learn],predClass)
+confusionMatrix <- table(genre[learn],predClass)
 confusionMatrix
 error_rate.learn <- 100*(confusionMatrix[1,1]+confusionMatrix[2,2])/nlearn 
 error_rate.learn
@@ -156,15 +161,15 @@ dim(tPredictions)
 tpredClass=NULL
 tpredClass[tPredictions[,1]<0.5]="pred_neg.test"
 tpredClass[tPredictions[,1]>=0.5]="pred_pos.test"
-table(Dictamen[-learn],tpredClass)
-TestConfusionMatrix <- table(Dictamen[-learn],tpredClass)
+table(genre[-learn],tpredClass)
+TestConfusionMatrix <- table(genre[-learn],tpredClass)
 error_rate.test <- 100*(TestConfusionMatrix[1,1]+TestConfusionMatrix[2,2])/ntest 
 error_rate.test
 
 
 # ROC CURVE
 
-Dict.test <- Dictamen[-learn]
+Dict.test <- genre[-learn]
 table(Dict.test)
 npos <- table(Dict.test)[1]
 nneg <- ntest - npos
