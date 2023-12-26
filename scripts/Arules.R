@@ -11,72 +11,53 @@ df_wk_i <- readRDS("report/preprocessing.Rdata")
 df_wk_i %>% names()
 
 # We perform this analysis with all categorical columns we have currently.
-df_cat <- df_wk_i %>%
-  select("Artist", "Track", "Album", "Key", "instrumental_band", 
-         "speech_band", "Album_type",  "Licensed", "official_video", "genre", "type", "time_signature",
-         "mode") %>%
-  mutate(across(everything(), as.factor))
+df_wk_i$Artist <- factor(df_wk_i$Artist)
+df_wk_i$Track <- factor(df_wk_i$Track)
+df_wk_i$Album <- factor(df_wk_i$Album)
+df_wk_i$Title <- factor(df_wk_i$Title)
+df_wk_i$Channel <- factor(df_wk_i$Channel)
+df_wk_i$Album_type <- factor(df_wk_i$Album_type)
+df_wk_i$Key <- factor(df_wk_i$Key)
+df_wk_i$Licensed <- factor(df_wk_i$Licensed)
+df_wk_i$official_video <- factor(df_wk_i$official_video)
+df_wk_i$type <- factor(df_wk_i$type)
+df_wk_i$genre <- factor(df_wk_i$genre)
 
+#Selecting interesting categorical variables
+dcat<-df_wk_i[,c(6,9,21,22,24)]
 
+#Checking levels
+length(levels(dcat$Album_type))
+length(levels(dcat$Key))
+length(levels(dcat$Licensed))
+length(levels(dcat$official_video))
+length(levels(dcat$genre))
 
-# Compute "Popularity" column, which sums up "scaled_views" with "scaled_stream"
-df_cat$popularity <- df_wk_i$scaled_views + df_wk_i$scaled_stream
-
-# Categorize the 'popularity' column into four categories, defining by their quantiles
-quantiles <- quantile(df_cat$popularity, probs = c(0, 0.25, 0.5, 0.75, 1))
-
-df_cat$popularity_category <- cut(df_cat$popularity, 
-                              breaks = quantiles, 
-                              labels = c("Low", "Medium", "High", "Very High"),
-                              include.lowest = TRUE)
-
-table(df_cat$popularity_category)
-df_cat$popularity <- NULL
-
+foo<-function(x){length(levels(x))}
+sum(sapply(dcat, foo))
 
 # Convert the dataframe to a transactional dataset
-df_trans <- as(df_cat, "transactions")
+df_trans <- as(dcat, "transactions")
 summary(df_trans)
 inspect(head(df_trans,10)) #list top 10 transactions
-itemFrequencyPlot(df_trans, topN=10, xlab="Top 10 Frequent Items")
-itemFrequencyPlot(df_trans, topN=20, cex.names=0.8, xlab="Top 20 Frequent Items")
+itemFrequencyPlot(df_trans, topN=10, xlab="Items")
+itemFrequencyPlot(df_trans, topN=15, xlab="Items")
 
+#Generate itemsets of size 1 and count their frequencies
+item_freq <- itemFrequency(df_trans, type = "absolute")
+#Rank the items based on frequency
+top_items <- names(sort(item_freq, decreasing = TRUE))[1:15]
+#Find the minimum support by taking the support of the least frequent item among the top 10
+min_support <- min(itemFrequency(df_trans[, top_items], type = "relative"))
 
 ######################################## Apriori Rules mining ####################################
 
 # Apply Apriori algorithm
-rules <- apriori(df_trans, parameter = list(support = 0.10, confidence = 0.30, minlen=3))
+rules <- apriori(df_trans, parameter = list(support = min_support, confidence = 0.75, minlen=2))
 
 # General Rules set
 summary(rules)
-inspect(head(rules, n=20,  by="lift"))  
-
-# Create subsets of rules, taking into account for the rhs there are 4 different levels of popularity
-# Subset for popularity_category = Medium is empty
-
-
-# Subset of rules when popularity_category = Low
-popularityLow_subset <- subset(rules, subset = rhs %in% "popularity_category=Low")
-inspect(head(popularityLow_subset,by="lift"))
-
-
-# Subset of rules when popularity_category = High
-popularityHigh_subset <- subset(rules, subset = rhs %in% "popularity_category=High")
-inspect(head(popularityHigh_subset,by="lift"))
-
-# Subset of rules when popularity_category = Very High
-popularityVeryHigh_subset <- subset(rules, subset = rhs %in% "popularity_category=Very High")
-inspect(head(popularityVeryHigh_subset,by="lift"))
-
-
-######################################## ECLAT algorithm ####################################
-
-# Apply ECLAT algorithm
-eclat_itemsets <- eclat(df_trans, parameter = list(supp = 0.30, minlen = 3))
-
-# Inspect the top itemsets
-inspect(head(sort(eclat_itemsets)))
-
+inspect(head(rules, n=10,  by="lift"))  
 
 # Create a matrix to check for redundant rules
 subset.matrix <- is.subset(rules, rules, sparse = FALSE)
@@ -84,10 +65,21 @@ subset.matrix[lower.tri(subset.matrix, diag = TRUE)] <- NA
 
 # Identify redundant rules
 redundant <- colSums(subset.matrix, na.rm = TRUE) >= 1
-redundant_indices <- which(redundant)
+which(redundant)
 # Prune out redundant rules
-rules_pruned <- rules[!redundant]
+rules.pruned <- rules[!redundant]
+rules.pruned <- sort(rules.pruned, by = "lift")
+inspect(head(rules.pruned, n = 10))
 
-rules_pruned <- sort(rules_pruned, by = "lift")
-inspect(head(rules_pruned, n = 20))
+###Visualizing Results
+plot(rules, measure = c("support", "lift"), shading = "confidence")
+#order == number of items inside the rules
+plot(rules.pruned, method = "grouped")
 
+######################################## ECLAT algorithm ####################################
+
+# Apply ECLAT algorithm
+eclatDTrans <- eclat(df_trans, parameter = list(support = min_support, minlen = 2, maxlen = 5))
+
+# Inspect the top itemsets
+inspect(head(sort(eclatDTrans)))
