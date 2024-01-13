@@ -56,7 +56,6 @@ source("../scripts/preprocessing.r")
 
 ```{r EDA b prpr}
 df_wk_i <- readRDS("preprocessing.Rdata")
-
 create_report(df_wk_i,   config = configure_report(add_plot_prcomp = FALSE))
 ```
 
