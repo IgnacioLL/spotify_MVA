@@ -1,29 +1,53 @@
-#  READING CREDSCO_BIN
-# load("d:/karina/docencia/DataMiningEI/Practiques/2CredscoProfiling/credscok_bin")
+---
+title: "Untitled"
+author: "Max Tico y Ignacio Lloret"
+date: "2023-12-28"
+output: html_document
+---
 
-#read data only if required
-# setwd("D:/karina/docencia/01areferenciesPPT/0DadesPractiques/CREDSCO")
-# dd <- read.table("CredScoClean.csv",header=T, sep=";", dec='.');
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
 library(magrittr)
 library(tidyverse)
+library(kableExtra)
 
 dd <- readRDS("C:/MDS/MVA/Project/preprocessing.Rdata")
-dd$genre %>% table
 
-## use dendograms gower y ward., describe data we are using, all data target and not target 
-## profiling en markdown. 
-
-names(dd)
-attach(dd)
 
 dd %>% names
 dd <- dd %>% select("Album_type","Danceability","Energy","Key","Loudness",
                     "Speechiness","Acousticness","Instrumentalness", "Liveness", "Valence",
-                    "Tempo","Duration_ms","scaled_stream", "scaled_views", "genre","mode","time_signature",
-                    "type")
+                    "Tempo","Duration_ms","scaled_stream", "scaled_views", "genre","mode","time_signature")
 
 
+columns_to_scale <- c("Danceability", "Energy", "Loudness", "Speechiness", 
+                       "Acousticness", "Instrumentalness", "Liveness", 
+                       "Valence", "Tempo", "Duration_ms", 
+                       "scaled_stream", "scaled_views")
 
+# Use the scale function to scale the selected columns
+dd[columns_to_scale] <- scale(dd[columns_to_scale])
+
+dd$Album_type <- dd$Album_type %>% as.factor
+dd$mode <- dd$mode %>% as.factor
+dd$time_signature <- dd$time_signature %>% as.factor
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
 #Calcula els valor test de la variable Xnum per totes les modalitats del factor P
 ValorTestXnum <- function(Xnum,P){
   #freq dis of fac
@@ -58,29 +82,33 @@ ValorTestXquali <- function(P,Xquali){
   for(c in 1:length(levels(as.factor(P)))){for (s in 1:length(levels(Xquali))){if (pzkj[c,s]> 0.5){pzkj[c,s]<-1- pzkj[c,s]}}}
   return (list(rowpf=pf,vtest=zkj,pval=pzkj))
 }
+```
 
-
-#source("file")
-#dades contain the dataset
+```{r}
 dades<-dd
-#dades<-dd[filtro,]
-#dades<-df
+
 K<-dim(dades)[2]
 par(ask=TRUE)
 
+
 d  <- dist(dd)
 h1 <- hclust(d,method="ward")  # NOTICE THE COST
+
+## Now we will cut with 6 again
 plot(h1)
-
-# BUT WE ONLY NEED WHERE THERE ARE THE LEAPS OF THE HEIGHT
-
-# WHERE ARE THER THE LEAPS? WHERE WILL YOU CUT THE DENDREOGRAM?, HOW MANY CLASSES WILL YOU OBTAIN?
+abline(h = 200, col="red")
+abline(h = 500, col="blue")
 
 c1 <- cutree(h1,6)
-c2 <- cutree(h1,3)
 
 
-P<-c2
+```
+
+```{r}
+
+par(mfrow=c(1, 1)) # Cada gráfico en una página diferente
+
+P<-c1
 
 nameP<-"classe"
 
@@ -181,11 +209,10 @@ for (c in 1:length(levels(as.factor(P)))) {
     print(sort(pvalk[c,]), digits=3) 
   }
 }
+pvalk %>% round(2) %>% as.data.frame %>% writexl::write_xlsx("C:/MDS/MVA/Project/pval.xlsx")
 
-#afegir la informacio de les modalitats de les qualitatives a la llista de pvalues i fer ordenacio global
 
-#saving the dataframe in an external file
-#write.table(dd, file = "credscoClean.csv", sep = ";", na = "NA", dec = ".", row.names = FALSE, col.names = TRUE)
+```
 
 
 
