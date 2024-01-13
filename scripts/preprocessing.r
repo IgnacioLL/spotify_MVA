@@ -39,7 +39,8 @@ grid.arrange(g1, g2, g3, g4, ncol = 2)
 # Univariate outliers
 
 ## It looks like we have an outlier at 0 that must be investigated and some mild outliers with have a 200 - 250 range which they look okay
-ggplot(data = df_wk) + geom_boxplot(aes(x=Tempo)) + theme_minimal() 
+ggplot(data = df_wk) + geom_histogram(aes(x=Tempo)) + theme_minimal() 
+ggplot(data = df_wk) + geom_histogram(aes(x=Duration_ms)) + theme_minimal() 
 
 
 ## Delete songs with Noise in the track and Tempo < 15 and in the channel White Noise - Topic
@@ -120,5 +121,9 @@ df_wk_i <- cbind(add_df_wk, df_wk_impute)
 df_wk_i$scaled_comments <- ifelse(is.na(df_wk_i$scaled_comments), 0, df_wk_i$scaled_comments) # We will impute log(0) values as 0.
 df_wk_i$scaled_likes <- ifelse(is.na(df_wk_i$scaled_likes), 0, df_wk_i$scaled_likes) # We will impute log(0) values as 0.
 df_wk_i$scaled_views <- ifelse(is.na(df_wk_i$scaled_views), 0, df_wk_i$scaled_views) # We will impute log(0) values as 0.
+df_wk_i$Stream
+
+df_wk_i <- df_wk_i %>% select(!c("Stream","Views","comments","likes")) ## this columns won't be used.
+
 
 saveRDS(df_wk_i, file = "preprocessing.Rdata")
