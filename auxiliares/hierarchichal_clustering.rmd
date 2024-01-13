@@ -97,6 +97,7 @@ h1 <- hclust(d,method="ward")  # NOTICE THE COST
 ## Now we will cut with 6 again
 plot(h1)
 abline(h = 200, col="red")
+abline(h = 500, col="blue")
 
 c1 <- cutree(h1,6)
 
@@ -208,7 +209,7 @@ for (c in 1:length(levels(as.factor(P)))) {
     print(sort(pvalk[c,]), digits=3) 
   }
 }
-# pvalk %>% round(2) %>% as.data.frame %>% writexl::write_xlsx("C:/MDS/MVA/Project/pval.xlsx")
+pvalk %>% round(2) %>% as.data.frame %>% writexl::write_xlsx("C:/MDS/MVA/Project/pval.xlsx")
 
 
 ```

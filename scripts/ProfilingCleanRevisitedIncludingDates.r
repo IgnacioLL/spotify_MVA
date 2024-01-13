@@ -16,13 +16,14 @@ dd$genre %>% table
 names(dd)
 attach(dd)
 
-#Dictamen    <- as.factor(Dictamen)
-#levels(Dictamen) <- c(NA, "positiu","negatiu")
 dd %>% names
 dd <- dd %>% select("Album_type","Danceability","Energy","Key","Loudness",
                     "Speechiness","Acousticness","Instrumentalness", "Liveness", "Valence",
                     "Tempo","Duration_ms","scaled_stream", "scaled_views", "genre","mode","time_signature",
                     "type")
+
+
+
 #Calcula els valor test de la variable Xnum per totes les modalitats del factor P
 ValorTestXnum <- function(Xnum,P){
   #freq dis of fac
@@ -78,12 +79,10 @@ plot(h1)
 c1 <- cutree(h1,6)
 c2 <- cutree(h1,3)
 
-#P must contain the class variable
-#P<-dd[,3]
+
 P<-c2
-#P<-dd[,18]
+
 nameP<-"classe"
-#P<-df[,33]
 
 nc<-length(levels(factor(P)))
 nc

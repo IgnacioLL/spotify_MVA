@@ -38,9 +38,9 @@ df <- df3
 ## EDA before preprocessing
 
 ```{r EDA b prpr}
-library(DataExplorer)
-
-create_report(df)
+  library(DataExplorer)
+  
+  create_report(df)
 ```
 
 

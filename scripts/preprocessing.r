@@ -1,14 +1,18 @@
 library(tidyverse); library(stringr);library(ggplot2);library(gridExtra);library(mice)
 
 
-df_wk <- df %>% select(!c("Uri","Url_youtube","...1","Url_spotify", "Description")) ## this columns won't be used.
-df_wk %>% glimpse
+df_wk <- df %>% select(!c("Uri","Url_youtube","...1","Url_spotify", "Description","type")) ## this columns won't be used.
+
 ((df_wk$Artist %>% is.na)==FALSE) %>% sum
 ## If VEVO is in the WORD then the channel will be VEVO
 df_wk$Channel %>% table %>% sort(decreasing = TRUE)
 x <- (df_wk$Channel %>% stringr::str_match(pattern = "VEVO") %>% is.na)==FALSE
 df_wk$Channel[x] <- "VEVO"
 
+
+df$genre <- df$genre %>% as.factor()
+df$mode <- df$mode %>% as.factor()
+df$time_signature <- df$time_signature %>% as.factor()
 
 g1 <- ggplot(data = df_wk) + geom_histogram(aes(x=Views)) + theme_minimal()
 g2 <- ggplot(data = df_wk) + geom_histogram(aes(x=Stream)) + theme_minimal()
@@ -69,8 +73,6 @@ df_wk$Artist %>% unique %>% length()
 ## As we cannot study 2.079 some grouping is needed. 
 
 ## Convert numeric those variables that have a clearly not-normal distribution
-df_wk$instrumental_band <-  cut(df_wk$Instrumentalness, breaks = c(-1,0.00001, 0.25,0.5, Inf), labels = c("Zero", "Low","Medium","High"))
-df_wk$speech_band <-  cut(df_wk$Speechiness, breaks = c(-1,0.00001, 0.25,0.5, Inf), labels = c("Zero", "Low","Medium","High"))
 df_wk$Key <- df_wk$Key %>% as.factor()
 
 df_wk$scaled_views <- ifelse(df_wk$scaled_views %>% is.infinite, 0, df_wk$scaled_views)
