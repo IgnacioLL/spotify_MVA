@@ -1,18 +1,17 @@
 # install.packages("MASS")
 library(MASS)
-setwd("C:/Users/Silvia/OneDrive - Universitat Politècnica de Catalunya/Escritorio/UPC/MASTER DS/1A/MVA/spotify_MVA/scripts")
-df <- readRDS("../report/preprocessing.Rdata")
+
+df <- readRDS("preprocessing.Rdata")
 names(df)
 
-#[1] "Artist"            "Track"             "Album"             "Title"             "Channel"           "Album_type"        "Danceability"      "Energy"           
-#[9] "Key"               "Loudness"          "Speechiness"       "Acousticness"      "Instrumentalness"  "Liveness"          "Valence"           "Tempo"            
-#[17] "Duration_ms"       "Views"             "Likes"             "Comments"          "Licensed"          "official_video"    "Stream"            "genre"(24)            
-#[25] "mode"              "time_signature"    "type"              "scaled_views"      "scaled_stream"     "scaled_likes"      "scaled_comments"   "instrumental_band"
-#[33] "speech_band"
+# [1] "Artist"           "Track"            "Album"            "Title"            "Channel"          "Album_type"       "Danceability"     "Energy"          
+# [9] "Key"              "Loudness"         "Speechiness"      "Acousticness"     "Instrumentalness" "Liveness"         "Valence"          "Tempo"           
+# [17] "Duration_ms"      "Licensed"         "official_video"   "genre"  (20)          "mode"             "time_signature"   "scaled_views"     "scaled_stream"   
+# [25] "scaled_likes"     "scaled_comments" 
 
 #get numerical variables (with no missing values)
 numeriques<-which(sapply(df,is.numeric))
-df_n<-df[,c(24,numeriques)]
+df_n<-df[,c(20,numeriques)]
 sapply(df_n,class)
 #remove none scaled variables + transformed to categorical variables + Likes and Comments very correlated to Views
 df_n <- df_n[, !(names(df_n) %in% c("Views", "Stream", "Likes", "Comments","Speechiness","Instrumentalness", "scaled_likes", "scaled_comments"))]
@@ -25,13 +24,13 @@ names(df_n)
 # Our response variable is genre but our dataset it's unbalanced, so we decided to discriminate by a threshold of 100 observations.
 # In this way we can take only the modalities that are more relevant
 genre_counts <- table(df_n$genre)
-selected_genres <- names(genre_counts[genre_counts > 100])
+selected_genres <- names(genre_counts[genre_counts >= 100])
 
 df_n <- df_n[df_n$genre %in% selected_genres, ]
 
-#names(table(df_n$genre))
+names(table(df_n$genre))
 
-df_n.lda <- lda(genre ~ Danceability + Energy + Loudness + Acousticness + Liveness + Valence + Tempo + Duration_ms + mode + time_signature + Views + Streams,data=df_n)
+df_n.lda <- lda(genre ~ Danceability + Energy + Loudness + Acousticness + Liveness + Valence + Tempo + Duration_ms + Views + Streams, data=df_n) #mode + time_signature +
 
 df_n.lda
 
