@@ -1,4 +1,4 @@
-df_wk_i <- readRDS("../preprocessing.Rdata")
+df_wk_i <- readRDS("preprocessing.Rdata")
 
 #get numerical variables (with no missing values)
 numeriques<-which(sapply(df_wk_i,is.numeric))
@@ -42,7 +42,7 @@ nd = 6
 
 Psi = pc1$x[,1:nd]
 dim(Psi)
-Psi[2000,]
+Psi[1903,]
 
 # STORAGE OF LABELS FOR INDIVIDUALS AND VARIABLES
 
@@ -109,7 +109,7 @@ axis(side=3, pos= 0, labels = F)
 axis(side=2, pos= 0, labels = F)
 axis(side=4, pos= 0, labels = F)
 arrows(ze, ze, X, Y, length = 0.07,col="blue")
-text(X[1:10],Y[1:10],labels=etiq[1:10],col="darkblue", cex=0.7, pos=3)
+text(X[1:10],Y[1:10],labels=etiq[1:10],col="darkblue", cex=0.8, pos=1)
 
 # PC1 - PC3
 eje1<-1
@@ -124,7 +124,7 @@ axis(side=3, pos= 0, labels = F)
 axis(side=2, pos= 0, labels = F)
 axis(side=4, pos= 0, labels = F)
 arrows(ze, ze, X, Y, length = 0.07,col="blue")
-text(X[1:10],Y[1:10],labels=etiq[1:10],col="darkblue", cex=0.7, pos=3)
+text(X[1:10],Y[1:10],labels=etiq[1:10],col="darkblue", cex=0.8, pos=3)
 
 #Qualitative (PC1-PC3)
 
@@ -135,12 +135,12 @@ df_wk_i$Album_type <- as.factor(df_wk_i$Album_type)
 
 #nominal qualitative variables
 
-dcat<-c(6,9,21,22)
+dcat<-c(9,22,21,20)#Album_type, Licensed, official_video, genre
 #divide categoricals in several graphs if joint representation saturates
 
 #build a palette with as much colors as qualitative variables 
 
-colors<-c("blue","red","darkgreen","orange")
+colors<-c("blue","red","darkgreen","orange","purple","brown","black")
 
 #use the scale factor or not depending on the position of centroids
 # ES UN FACTOR D'ESCALA PER DIBUIXAR LES FLETXES MES VISIBLES EN EL GRAFIC
@@ -152,7 +152,7 @@ fm=20
 #Y<-fm*U[,eje2]
 
 #represent numerical variables in background
-plot(Psi[,eje1],Psi[,eje2],type="n",xlim=c(-1,1.2), ylim=c(-1,1), xlab = paste("PC", eje1), ylab = paste("PC", eje2), main = "Factorial Map (Qualitative Variables)")
+plot(Psi[,eje1],Psi[,eje2],type="n",xlim=c(-2,2), ylim=c(-1.5,1.5), xlab = paste("PC", eje1), ylab = paste("PC", eje2), main = "Factorial Map (Qualitative Variables)")
 #plot(X,Y,type="none",xlim=c(min(X,0),max(X,0)))
 axis(side=1, pos= 0, labels = F)
 axis(side=3, pos= 0, labels = F)
