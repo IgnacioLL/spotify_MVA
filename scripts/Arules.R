@@ -7,24 +7,18 @@ library("factoextra")
 
 ######################################## Data preparation ####################################
 
-df_wk_i <- readRDS("report/preprocessing.Rdata")
+df_wk_i <- readRDS("preprocessing.Rdata")
 df_wk_i %>% names()
 
 # We perform this analysis with all categorical columns we have currently.
-df_wk_i$Artist <- factor(df_wk_i$Artist)
-df_wk_i$Track <- factor(df_wk_i$Track)
-df_wk_i$Album <- factor(df_wk_i$Album)
-df_wk_i$Title <- factor(df_wk_i$Title)
-df_wk_i$Channel <- factor(df_wk_i$Channel)
 df_wk_i$Album_type <- factor(df_wk_i$Album_type)
 df_wk_i$Key <- factor(df_wk_i$Key)
 df_wk_i$Licensed <- factor(df_wk_i$Licensed)
 df_wk_i$official_video <- factor(df_wk_i$official_video)
-df_wk_i$type <- factor(df_wk_i$type)
 df_wk_i$genre <- factor(df_wk_i$genre)
 
 #Selecting interesting categorical variables
-dcat<-df_wk_i[,c(6,9,21,22,24)]
+dcat<-df_wk_i[,c(6,9,18,19,21,20)]
 
 #Checking levels
 length(levels(dcat$Album_type))
@@ -41,6 +35,7 @@ df_trans <- as(dcat, "transactions")
 summary(df_trans)
 inspect(head(df_trans,10)) #list top 10 transactions
 itemFrequencyPlot(df_trans, topN=10, xlab="Items")
+title("Top 10 frequent items explored by ECLAT Algorithm")
 itemFrequencyPlot(df_trans, topN=15, xlab="Items")
 
 #Generate itemsets of size 1 and count their frequencies
@@ -70,11 +65,12 @@ which(redundant)
 rules.pruned <- rules[!redundant]
 rules.pruned <- sort(rules.pruned, by = "lift")
 inspect(head(rules.pruned, n = 10))
+inspect(head(rules, n = 10))
 
 ###Visualizing Results
-plot(rules, measure = c("support", "lift"), shading = "confidence")
+plot(rules.pruned, measure = c("support", "lift"), shading = "confidence")
 #order == number of items inside the rules
-plot(rules.pruned, method = "grouped")
+plot(rules, method = "grouped")
 
 ######################################## ECLAT algorithm ####################################
 
