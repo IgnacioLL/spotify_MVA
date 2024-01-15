@@ -61,21 +61,29 @@ subset.matrix[lower.tri(subset.matrix, diag = TRUE)] <- NA
 # Identify redundant rules
 redundant <- colSums(subset.matrix, na.rm = TRUE) >= 1
 which(redundant)
+
 # Prune out redundant rules
 rules.pruned <- rules[!redundant]
-rules.pruned <- sort(rules.pruned, by = "lift")
-inspect(head(rules.pruned, n = 10))
-inspect(head(rules, n = 10))
+generalRules <- rules.pruned
+
+# Sort the pruned rules by 'lift' and take the top 20
+top20LiftRules <- sort(rules.pruned, by = "lift")[1:20]
+inspect(top20LiftRules)
+
+# Sort the pruned rules by 'confidence' and take the top 20
+top20ConfidenceRules <- sort(rules.pruned, by = "confidence")[1:20]
+inspect(top20ConfidenceRules)
 
 ###Visualizing Results
-plot(rules.pruned, measure = c("support", "lift"), shading = "confidence")
+plot(generalRules, measure = c("support", "lift"), shading = "confidence")
 #order == number of items inside the rules
-plot(rules, method = "grouped")
+plot(generalRules, method = "grouped")
 
 ######################################## ECLAT algorithm ####################################
 
 # Apply ECLAT algorithm
-eclatDTrans <- eclat(df_trans, parameter = list(support = min_support, minlen = 2, maxlen = 5))
+eclatDTrans <- eclat(df_trans, parameter = list(support = min_support, minlen = 2))
 
 # Inspect the top itemsets
-inspect(head(sort(eclatDTrans)))
+top_itemsets_eclat <- head(sort(eclatDTrans, by = "support"), 10)
+inspect(top_itemsets_eclat)
