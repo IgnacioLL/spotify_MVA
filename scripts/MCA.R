@@ -4,17 +4,12 @@
 ##############################################
 
 
-#Set your Working
-# Directory
 ### Required packages ###
 library(FactoMineR)
 library(Matrix)
 library(factoextra)
 library(corrplot)
 
-?MCA
-
-### Lectura de la base de dades ###
 spoty <- readRDS("../preprocessing.RData")
 dim(spoty)
 summary(spoty)
@@ -23,12 +18,26 @@ names(spoty)
 ##### FIRST ANALYSIS WITH LICENSED VARIABLE
 
 #Running MCA Analysis
-# res.mca0 will be calculated by using the LOGICAL TABLE or Indicator Table,
-# Method by default = "Indicator"
-qualitative_variables <- c(6,9,21,22,24,25,28,29)
-res.mca0<-MCA(spoty[,qualitative_variables], quanti.sup=c(5,6), graph = FALSE) # Pass numerical features as extra information
-# At the end after getting good knowledge of the MCA R function, you can run
-# MCA analysis by selecting graph=TRUE)
+spoty$genre <- as.factor(spoty$genre)
+spoty$time_signature <- as.factor(spoty$time_signature)
+spoty$mode <- as.factor(spoty$mode)
+spoty$Album_type <- as.factor(spoty$Album_type)
+qualitative_variables <- which(sapply(spoty, is.factor))
+qualitative_variables_list <- as.list(qualitative_variables)
+
+quali <- c(6,9,21,22,24,25,26,28,30,32,33)
+quali_no_lis <- c(6,9,22,24,25,26,28,30,32,33)
+# numeriques<-which(sapply(spoty,is.numeric))
+# #remove none scaled variables + transformed to categorical variables + Likes and Comments very correlated to Views
+# df_n<-spoty[,numeriques]
+# df_n <- df_n[, !(names(df_n) %in% c("Views", "Stream", "Likes", "Comments","Speechiness","Instrumentalness", "scaled_likes", "scaled_comments"))]
+# 
+# quanti_sup_indices <- which(names(spoty) %in% names(df_n))
+# quanti.sup=c(17,23,24),
+
+res.mca0 <- MCA(spoty[, quali_no_lis],quanti.sup = c(7,8),graph = FALSE) # Pass numerical features as extra information
+# res.mca0 will be calculated by using the LOGICAL TABLE or Indicator Table, Method by default = "Indicator"
+# At the end after getting good knowledge of the MCA R function, you can run MCA analysis by selecting graph=TRUE
 
 # RESULTS
 attributes(res.mca0)
@@ -113,7 +122,7 @@ fviz_mca_var(res.mca0,
 
 #Contribution of variable categories to the dimensions
 # Showing the first four variables contributions
-head(round(res.mca0$var$contrib,2), 4)
+head(round(res.mca0$var$contrib,2), 9)
 # Showing all variable contributions
 round(res.mca0$var$contrib,2)
 # Total contribution to dimension 1 and 2
@@ -128,14 +137,13 @@ fviz_mca_var(res.mca0, col.var = "contrib",
 ##With Individuals you can perform the same previous analysis
 fviz_mca_ind(res.mca0, 
              label = "none", # hide individual labels
-             habillage = "official_video", # color by groups 
-             palette = c("#00AFBB", "#E7B800","darkgreen"),
+             habillage = "genre", # color by groups 
              addEllipses = TRUE, ellipse.type = "confidence",
              ggtheme = theme_minimal()) 
 
 fviz_mca_ind(res.mca0, 
              label = "none", # hide individual labels
-             habillage = "speech_band", # color by groups 
+             habillage = "instrumental_band", # color by groups 
              palette = c("#00AFBB", "#E7B800","red","grey"),
              addEllipses = TRUE, ellipse.type = "confidence",
              ggtheme = theme_minimal()) 
