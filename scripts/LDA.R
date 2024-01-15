@@ -25,37 +25,36 @@ names(df_n)
 # In this way we can take only the modalities that are more relevant
 genre_counts <- table(df_n$genre)
 selected_genres <- names(genre_counts[genre_counts >= 100])
-
 df_n <- df_n[df_n$genre %in% selected_genres, ]
+df_n$genre <- factor(df_n$genre)
 
 names(table(df_n$genre))
 
-df_n.lda <- lda(genre ~ Danceability + Energy + Loudness + Acousticness + Liveness + Valence + Tempo + Duration_ms + Views + Streams, data=df_n) #mode + time_signature +
-
+df_n.lda <- lda(genre ~ Danceability + Energy + Loudness + Acousticness + Liveness + Valence + Tempo + Duration_ms + Views + Streams, data=df_n)
 df_n.lda
 
 #coeficients de la funcio discriminant
 df_n.lda$scaling[,1:5]
 
 #valors de cada cas per la primera funcio discriminant
-df_n.lda.values <- predict(df_n.lda, df_n[2:13])
+df_n.lda.values <- predict(df_n.lda, df_n[2:11])
 
-df_n[,14]<- df_n.lda.values$x[,5]
+df_n[,dim(df_n)[2]+1]<- df_n.lda.values$x[,5]
 df_n.lda.values$x[,5]
-df_n[,15]<- df_n.lda.values$x[,4]
+df_n[,dim(df_n)[2]+1]<- df_n.lda.values$x[,4]
 df_n.lda.values$x[,4]
-df_n[,16]<- df_n.lda.values$x[,3]
+df_n[,dim(df_n)[2]+1]<- df_n.lda.values$x[,3]
 df_n.lda.values$x[,3]
-df_n[,17]<- df_n.lda.values$x[,2]
+df_n[,dim(df_n)[2]+1]<- df_n.lda.values$x[,2]
 df_n.lda.values$x[,2]
-df_n[,18]<- df_n.lda.values$x[,1]
+df_n[,dim(df_n)[2]+1]<- df_n.lda.values$x[,1]
 df_n.lda.values$x[,1]
 
-names(df_n)[14]<-"LDA5"
-names(df_n)[15]<-"LDA4"
-names(df_n)[16]<-"LDA3"
-names(df_n)[17]<-"LDA2"
-names(df_n)[18]<-"LDA1"
+names(df_n)[dim(df_n)[2]-4]<-"LDA5"
+names(df_n)[dim(df_n)[2]-3]<-"LDA4"
+names(df_n)[dim(df_n)[2]-2]<-"LDA3"
+names(df_n)[dim(df_n)[2]-1]<-"LDA2"
+names(df_n)[dim(df_n)[2]]<-"LDA1"
 
 calcWithinGroupsVariance <- function(variable,groupvariable)
 {
@@ -159,8 +158,7 @@ calcSeparations <- function(variables,groupvariable)
   }
 }
 
-#separacio que donen les dues funcions discriminants (ratio de variancia
-#entre respecte v intra)
+#separacio que donen les dues funcions discriminants (ratio de variancia entre respecte v intra)
 calcSeparations(df_n.lda.values$x,df_n[1])
 
 #total separation (la suma de les dues)
@@ -179,8 +177,7 @@ hist(df_n.lda.values$x[,5])
 par(mfrow=c(1, 1))
 par(mar=c(3,2.5,1.5,1))
 
-ldahist(data = df_n.lda.values$x[,1], g=df_n$genre, ymax=1)
-
+ldahist(data = df_n.lda.values$x[,1], g=df_n$genre)
 ldahist(data = df_n.lda.values$x[,2], g=df_n$genre)
 ldahist(data = df_n.lda.values$x[,3], g=df_n$genre)
 ldahist(data = df_n.lda.values$x[,4], g=df_n$genre)
@@ -189,13 +186,13 @@ ldahist(data = df_n.lda.values$x[,5], g=df_n$genre)
 #plot de les dues components discriminants (etiquetem els grups)
 plot(df_n.lda.values$x[,1],df_n.lda.values$x[,2]) # make a scatterplot
 
-plot(df_n[,18],df_n[,17])
+plot(df_n$LDA1, df_n$LDA2)
 text(df_n.lda.values$x[,1],df_n.lda.values$x[,2],df_n$genre,cex=0.7,pos=4,col = rainbow(length(unique(df_n$genre)))[as.factor(df_n$genre)])#  "red") # add labels
 
 # matriz de gráficos de dispersión para las 5 lda
 pairs(df_n.lda.values$x[, 1:5], col = rainbow(length(unique(df_n$genre)))[as.factor(df_n$genre)], pch = 19)
 
-plot(df_n[,18],df_n[,17], type="n")
+plot(df_n$LDA1, df_n$LDA2, type="n")
 text(df_n.lda.values$x[,1],df_n.lda.values$x[,2],df_n$genre,cex=0.7,pos=4,col="red") # add labels
 
 
@@ -204,19 +201,44 @@ df_n.lda$scaling[,1]
 
 #utilitzar les regles per estimar el grup de cada cas
 par(mfrow=c(1,2))
-ldahist(data = df_n[,17], g=df_n$genre)
-ldahist(data = df_n[,18], g=df_n$genre)
+ldahist(data = df_n$LDA2, g=df_n$genre)
+ldahist(data = df_n$LDA1, g=df_n$genre)
+
+n<-dim(df_n)[1]
+for(i in 1:n){
+  if(df_n[i,"LDA2"]<0){   #1,2,5,6
+    if(df_n[i,"LDA1"]>2){ #1
+      df_n[i,"PredictedClass"]<-1
+    }else if(df_n[i,"LDA1"]>-1){  #5
+      df_n[i,"PredictedClass"]<-5
+    }else{
+      if(df_n[i,"LDA3"]>0){   #2
+        df_n[i,"PredictedClass"]<-2
+      }else{  #6
+        df_n[i,"PredictedClass"]<-6
+      }
+    }
+  }else{  #3,4
+    if(df_n[i,"LDA1"]>0.5){   #3
+      df_n[i,"PredictedClass"]<-3
+    }else{  #4
+      df_n[i,"PredictedClass"]<-4
+    }
+  }
+}
+
 
 #matriu de confusio
-MC <- table(df_n.lda.values$class, df_n$genre)
-MC
+MC1 <- table(df_n[,"genre"], df_n[,"PredictedClass"]);MC1 #cortes manuales
+MC2 <- table(df_n.lda.values$class, df_n$genre);MC2 #funcion lda
 
 #accuracy
-accuracy<-sum(diag(MC))/dim(df_n)[1]
-accuracy
+accuracy1 <- sum(diag(MC1))/dim(df_n)[1];accuracy1
+accuracy2 <- sum(diag(MC2))/dim(df_n)[1];accuracy2
+
 
 #compute missclassification rate
-MR<-1-accuracy
+MR <- 1-accuracy2
 MR
 
 #buscar punts intermedis de les mitjanes i utilitzarlos per definir les regles de classificacio
@@ -246,7 +268,3 @@ printMeanAndSdByGroup <- function(variables,groupvariable)
 
 #mitjanes de les funcions discriminants per grups
 printMeanAndSdByGroup(df_n.lda.values$x,df_n[1])
-
-
-#plot(df_n[,2],df_n[,3], col=df_n[,1])
-#plot(df_n[,5],df_n[,7], col=df_n[,1])

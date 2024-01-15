@@ -10,7 +10,7 @@ library(Matrix)
 library(factoextra)
 library(corrplot)
 
-spoty <- readRDS("../preprocessing.RData")
+spoty <- readRDS("preprocessing.RData")
 dim(spoty)
 summary(spoty)
 names(spoty)
@@ -24,6 +24,7 @@ spoty$mode <- as.factor(spoty$mode)
 spoty$Album_type <- as.factor(spoty$Album_type)
 qualitative_variables <- which(sapply(spoty, is.factor))
 qualitative_variables_list <- as.list(qualitative_variables)
+
 
 quali <- c(6,9,21,22,24,25,26,28,30,32,33)
 quali_no_lis <- c(6,9,22,24,25,26,28,30,32,33)
