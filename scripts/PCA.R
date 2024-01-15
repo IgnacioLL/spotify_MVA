@@ -178,34 +178,34 @@ for(k in dcat){
 legend("bottomleft",names(df_wk_i)[dcat],pch=1,col=colors, cex=0.8)
 
 #represent numerical variables in background
-plot(Psi[,eje1],Psi[,eje2],type="n",xlim=c(-1,1.2), ylim=c(-1,1), xlab = paste("PC", eje1), ylab = paste("PC", eje2), main = "Factorial Map (Ordinal Variables)")
-#plot(X,Y,type="none",xlim=c(min(X,0),max(X,0)))
-axis(side=1, pos= 0, labels = F)
-axis(side=3, pos= 0, labels = F)
-axis(side=2, pos= 0, labels = F)
-axis(side=4, pos= 0, labels = F)
-
-#adf_wk_i projections of numerical variables in background
-arrows(ze, ze, X, Y, length = 0.07,col="lightgray")
-text(X[1:10],Y[1:10],labels=etiq[1:10],col="gray", cex=0.7, pos=3)
-
-#add ordinal variables
-dordi<-c(28,29)
-
-colors<-c("green","purple")
-
-c<-1
-col<-1
-for(k in dordi){
-  seguentColor<-colors[col]
-  fdic1 = tapply(Psi[,eje1],df_wk_i[,k],mean)
-  fdic2 = tapply(Psi[,eje2],df_wk_i[,k],mean) 
-  
-  # points(fdic1,fdic2,pch=16,col=seguentColor, labels=levels(df_wk_i[,k]))
-  #connect modalities of qualitative variables
-  lines(fdic1,fdic2,pch=16,col=seguentColor)
-  text(fdic1,fdic2,labels=levels(df_wk_i[,k]),col=seguentColor, cex=0.8)
-  c<-c+1
-  col<-col+1
-}
-legend("bottomleft",names(df_wk_i)[dordi],pch=1,col=colors[1:length(dordi)], cex=0.8)
+# plot(Psi[,eje1],Psi[,eje2],type="n",xlim=c(-1,1.2), ylim=c(-1,1), xlab = paste("PC", eje1), ylab = paste("PC", eje2), main = "Factorial Map (Ordinal Variables)")
+# #plot(X,Y,type="none",xlim=c(min(X,0),max(X,0)))
+# axis(side=1, pos= 0, labels = F)
+# axis(side=3, pos= 0, labels = F)
+# axis(side=2, pos= 0, labels = F)
+# axis(side=4, pos= 0, labels = F)
+# 
+# #adf_wk_i projections of numerical variables in background
+# arrows(ze, ze, X, Y, length = 0.07,col="lightgray")
+# text(X[1:10],Y[1:10],labels=etiq[1:10],col="gray", cex=0.7, pos=3)
+# 
+# #add ordinal variables
+# dordi<-c(28,29)
+# 
+# colors<-c("green","purple")
+# 
+# c<-1
+# col<-1
+# for(k in dordi){
+#   seguentColor<-colors[col]
+#   fdic1 = tapply(Psi[,eje1],df_wk_i[,k],mean)
+#   fdic2 = tapply(Psi[,eje2],df_wk_i[,k],mean) 
+#   
+#   # points(fdic1,fdic2,pch=16,col=seguentColor, labels=levels(df_wk_i[,k]))
+#   #connect modalities of qualitative variables
+#   lines(fdic1,fdic2,pch=16,col=seguentColor)
+#   text(fdic1,fdic2,labels=levels(df_wk_i[,k]),col=seguentColor, cex=0.8)
+#   c<-c+1
+#   col<-col+1
+# }
+# legend("bottomleft",names(df_wk_i)[dordi],pch=1,col=colors[1:length(dordi)], cex=0.8)

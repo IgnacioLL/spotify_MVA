@@ -7,24 +7,18 @@ library("factoextra")
 
 ######################################## Data preparation ####################################
 
-df_wk_i <- readRDS("report/preprocessing.Rdata")
+df_wk_i <- readRDS("preprocessing.Rdata")
 df_wk_i %>% names()
 
 # We perform this analysis with all categorical columns we have currently.
-df_wk_i$Artist <- factor(df_wk_i$Artist)
-df_wk_i$Track <- factor(df_wk_i$Track)
-df_wk_i$Album <- factor(df_wk_i$Album)
-df_wk_i$Title <- factor(df_wk_i$Title)
-df_wk_i$Channel <- factor(df_wk_i$Channel)
 df_wk_i$Album_type <- factor(df_wk_i$Album_type)
 df_wk_i$Key <- factor(df_wk_i$Key)
 df_wk_i$Licensed <- factor(df_wk_i$Licensed)
 df_wk_i$official_video <- factor(df_wk_i$official_video)
-df_wk_i$type <- factor(df_wk_i$type)
 df_wk_i$genre <- factor(df_wk_i$genre)
 
 #Selecting interesting categorical variables
-dcat<-df_wk_i[,c(6,9,21,22,24)]
+dcat<-df_wk_i[,c(6,9,18,19,21,20)]
 
 #Checking levels
 length(levels(dcat$Album_type))
@@ -41,6 +35,7 @@ df_trans <- as(dcat, "transactions")
 summary(df_trans)
 inspect(head(df_trans,10)) #list top 10 transactions
 itemFrequencyPlot(df_trans, topN=10, xlab="Items")
+title("Top 10 frequent items explored by ECLAT Algorithm")
 itemFrequencyPlot(df_trans, topN=15, xlab="Items")
 
 #Generate itemsets of size 1 and count their frequencies
@@ -66,15 +61,28 @@ subset.matrix[lower.tri(subset.matrix, diag = TRUE)] <- NA
 # Identify redundant rules
 redundant <- colSums(subset.matrix, na.rm = TRUE) >= 1
 which(redundant)
+
 # Prune out redundant rules
 rules.pruned <- rules[!redundant]
-rules.pruned <- sort(rules.pruned, by = "lift")
-inspect(head(rules.pruned, n = 10))
+generalRules <- rules.pruned
+
+# Sort the pruned rules by 'lift' and take the top 20
+top20LiftRules <- sort(rules.pruned, by = "lift")[1:20]
+inspect(top20LiftRules)
+
+# Sort the pruned rules by 'confidence' and take the top 20
+top20ConfidenceRules <- sort(rules.pruned, by = "confidence")[1:20]
+inspect(top20ConfidenceRules)
+
+# genre rules, with genre on RHS
+genre_rules <- subset(rules, rhs %pin% "genre=")
+inspect(head(genre_rules, n=10, by="lift")) 
+
 
 ###Visualizing Results
-plot(rules, measure = c("support", "lift"), shading = "confidence")
+plot(generalRules, measure = c("support", "lift"), shading = "confidence")
 #order == number of items inside the rules
-plot(rules.pruned, method = "grouped")
+plot(generalRules, method = "grouped")
 
 ######################################## ECLAT algorithm ####################################
 
@@ -82,4 +90,5 @@ plot(rules.pruned, method = "grouped")
 eclatDTrans <- eclat(df_trans, parameter = list(support = min_support, minlen = 2, maxlen = 5))
 
 # Inspect the top itemsets
-inspect(head(sort(eclatDTrans)))
+top_itemsets_eclat <- head(sort(eclatDTrans, by = "support"), 10)
+inspect(top_itemsets_eclat)
