@@ -74,6 +74,11 @@ inspect(top20LiftRules)
 top20ConfidenceRules <- sort(rules.pruned, by = "confidence")[1:20]
 inspect(top20ConfidenceRules)
 
+# genre rules, with genre on RHS
+genre_rules <- subset(rules, rhs %pin% "genre=")
+inspect(head(genre_rules, n=10, by="lift")) 
+
+
 ###Visualizing Results
 plot(generalRules, measure = c("support", "lift"), shading = "confidence")
 #order == number of items inside the rules
@@ -82,7 +87,7 @@ plot(generalRules, method = "grouped")
 ######################################## ECLAT algorithm ####################################
 
 # Apply ECLAT algorithm
-eclatDTrans <- eclat(df_trans, parameter = list(support = min_support, minlen = 2))
+eclatDTrans <- eclat(df_trans, parameter = list(support = min_support, minlen = 2, maxlen = 5))
 
 # Inspect the top itemsets
 top_itemsets_eclat <- head(sort(eclatDTrans, by = "support"), 10)
